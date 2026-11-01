@@ -1,0 +1,1189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Instagram</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Grand+Hotel&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #000000;
+      --card-bg: #121212;
+      --border: #262626;
+      --text: #f5f5f5;
+      --text-muted: #a8a8a8;
+      --primary: #0095f6;
+      --like-red: #ff3040;
+      --story-border: linear-gradient(45deg, #f09433 0%, #e6683c 25%, #dc2743 50%, #cc2366 75%, #bc1888 100%);
+      --sidebar-width: 245px;
+      --sidebar-collapsed-width: 72px;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      display: flex;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Left Sidebar */
+    .sidebar {
+      width: var(--sidebar-width);
+      height: 100vh;
+      position: fixed;
+      left: 0;
+      top: 0;
+      border-right: 1px solid var(--border);
+      padding: 24px 12px 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      z-index: 100;
+      background: var(--bg);
+    }
+
+    .brand-logo {
+      font-family: 'Grand Hotel', cursive;
+      font-size: 32px;
+      color: #fff;
+      text-decoration: none;
+      padding: 0 16px 20px;
+      display: block;
+    }
+
+    .nav-list {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .nav-item a {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      padding: 12px 14px;
+      border-radius: 8px;
+      color: var(--text);
+      text-decoration: none;
+      font-size: 15px;
+      font-weight: 500;
+      transition: background-color 0.2s ease, transform 0.15s ease;
+      position: relative;
+    }
+
+    .nav-item a:hover {
+      background-color: #1a1a1a;
+      transform: translateX(3px);
+    }
+
+    .nav-item a.active {
+      font-weight: 700;
+    }
+
+    .nav-item svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+      flex-shrink: 0;
+    }
+
+    .badge-dot {
+      width: 8px;
+      height: 8px;
+      background: var(--like-red);
+      border-radius: 50%;
+      position: absolute;
+      left: 32px;
+      top: 12px;
+    }
+
+    /* Main Content Area */
+    .main-container {
+      margin-left: var(--sidebar-width);
+      flex: 1;
+      display: flex;
+      justify-content: center;
+      padding: 30px 20px;
+      gap: 64px;
+      min-width: 0;
+    }
+
+    .feed-column {
+      width: 100%;
+      max-width: 470px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    /* Stories Bar */
+    .stories-container {
+      display: flex;
+      gap: 16px;
+      padding: 14px 4px;
+      overflow-x: auto;
+      scrollbar-width: none;
+      border-bottom: 1px solid var(--border);
+    }
+    .stories-container::-webkit-scrollbar { display: none; }
+
+    .story-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .story-ring {
+      width: 66px;
+      height: 66px;
+      border-radius: 50%;
+      background: var(--story-border);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 2.5px;
+      transition: transform 0.2s ease;
+    }
+
+    .story-item:hover .story-ring {
+      transform: scale(1.06);
+    }
+
+    .story-ring img {
+      width: 100%;
+      height: 100%;
+      border-radius: 50%;
+      object-fit: cover;
+      background: #000;
+      border: 2.5px solid #000;
+    }
+
+    .story-username {
+      font-size: 11.5px;
+      color: var(--text);
+      max-width: 68px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Feed Post Card */
+    .post-card {
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .post-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .post-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .post-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      object-fit: cover;
+      padding: 1.5px;
+      background: var(--story-border);
+    }
+
+    .post-user-info span {
+      font-weight: 600;
+      font-size: 13.5px;
+    }
+
+    .post-time {
+      color: var(--text-muted);
+      font-size: 12.5px;
+      margin-left: 6px;
+    }
+
+    .post-media-box {
+      position: relative;
+      width: 100%;
+      border-radius: 6px;
+      overflow: hidden;
+      background-color: #1a1a1a;
+      aspect-ratio: 1/1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .post-media-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* Heart Burst Animation on Double Tap */
+    .heart-burst {
+      position: absolute;
+      width: 90px;
+      height: 90px;
+      fill: #ffffff;
+      opacity: 0;
+      transform: scale(0);
+      pointer-events: none;
+      transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      filter: drop-shadow(0 4px 16px rgba(0,0,0,0.6));
+    }
+
+    .heart-burst.animate {
+      opacity: 0.95;
+      transform: scale(1.2);
+    }
+
+    /* Action bar */
+    .post-actions {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 4px 0;
+    }
+
+    .action-group {
+      display: flex;
+      gap: 16px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: var(--text);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: transform 0.15s ease, color 0.15s ease;
+    }
+
+    .action-btn:hover {
+      transform: scale(1.15);
+      color: var(--text-muted);
+    }
+
+    .action-btn svg {
+      width: 24px;
+      height: 24px;
+      fill: none;
+      stroke: currentColor;
+      stroke-width: 2;
+    }
+
+    .action-btn.liked svg {
+      fill: var(--like-red);
+      stroke: var(--like-red);
+    }
+
+    .post-likes {
+      font-size: 13.5px;
+      font-weight: 600;
+    }
+
+    .post-caption {
+      font-size: 13.5px;
+      line-height: 1.45;
+    }
+
+    .post-caption strong {
+      font-weight: 600;
+      margin-right: 6px;
+    }
+
+    .view-comments {
+      color: var(--text-muted);
+      font-size: 13px;
+      cursor: pointer;
+      text-decoration: none;
+    }
+
+    .post-comment-input-box {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #1a1a1a;
+      padding-top: 4px;
+    }
+
+    .post-comment-input {
+      background: transparent;
+      border: none;
+      color: var(--text);
+      font-size: 13px;
+      width: 85%;
+      outline: none;
+      padding: 4px 0;
+    }
+
+    .btn-post-comment {
+      background: none;
+      border: none;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 13px;
+      cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.2s ease;
+    }
+
+    .btn-post-comment:hover {
+      opacity: 1;
+    }
+
+    /* Right Sidebar (Suggestions) */
+    .right-sidebar {
+      width: 320px;
+      padding-top: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .user-profile-badge {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .user-badge-left {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .user-badge-left img {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .badge-names small {
+      color: var(--text-muted);
+      font-size: 12px;
+      display: block;
+    }
+
+    .btn-switch {
+      color: var(--primary);
+      font-size: 12px;
+      font-weight: 600;
+      text-decoration: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+    }
+
+    .suggestions-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+    }
+    .suggestions-header span { color: var(--text-muted); font-weight: 600; }
+    .suggestions-header a { color: var(--text); font-weight: 600; text-decoration: none; font-size: 12px; }
+
+    .suggestion-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .suggestion-user {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .suggestion-user img {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      object-fit: cover;
+    }
+
+    .btn-follow {
+      color: var(--primary);
+      background: none;
+      border: none;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: color 0.15s ease;
+    }
+    .btn-follow:hover { color: #fff; }
+
+    /* Real-time DM Chat Drawer (Connected to Go Concurrency WebSocket) */
+    .chat-drawer {
+      position: fixed;
+      bottom: 24px;
+      right: 28px;
+      width: 340px;
+      height: 460px;
+      background: #181818;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.6);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      z-index: 200;
+      transform: translateY(520px);
+      transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .chat-drawer.open {
+      transform: translateY(0);
+    }
+
+    .chat-header {
+      background: #202020;
+      padding: 12px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .chat-header-title {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 600;
+      font-size: 14px;
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      background: #4bb543;
+      border-radius: 50%;
+    }
+
+    .chat-messages {
+      flex: 1;
+      padding: 14px;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .chat-msg {
+      max-width: 80%;
+      padding: 8px 12px;
+      border-radius: 16px;
+      font-size: 13px;
+      line-height: 1.35;
+      word-break: break-word;
+    }
+
+    .chat-msg.me {
+      align-self: flex-end;
+      background: var(--primary);
+      color: #fff;
+      border-bottom-right-radius: 4px;
+    }
+
+    .chat-msg.other {
+      align-self: flex-start;
+      background: #2c2c2c;
+      color: #fff;
+      border-bottom-left-radius: 4px;
+    }
+
+    .chat-input-bar {
+      padding: 10px;
+      border-top: 1px solid var(--border);
+      display: flex;
+      gap: 8px;
+      background: #1c1c1c;
+    }
+
+    .chat-input {
+      flex: 1;
+      background: #2a2a2a;
+      border: none;
+      color: #fff;
+      padding: 8px 12px;
+      border-radius: 20px;
+      outline: none;
+      font-size: 13px;
+    }
+
+    .chat-send-btn {
+      background: var(--primary);
+      border: none;
+      color: #fff;
+      padding: 0 14px;
+      border-radius: 16px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Modal for Post Creation */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.7);
+      backdrop-filter: blur(4px);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+      z-index: 300;
+    }
+
+    .modal-overlay.open {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #262626;
+      width: 460px;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 30px rgba(0,0,0,0.5);
+    }
+
+    .modal-header {
+      padding: 12px;
+      text-align: center;
+      font-weight: 600;
+      border-bottom: 1px solid #363636;
+      position: relative;
+    }
+
+    .modal-close-btn {
+      position: absolute;
+      right: 14px;
+      top: 10px;
+      background: none;
+      border: none;
+      color: #fff;
+      font-size: 18px;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-input {
+      background: #181818;
+      border: 1px solid #404040;
+      border-radius: 6px;
+      padding: 10px;
+      color: #fff;
+      font-size: 13.5px;
+      outline: none;
+    }
+
+    .btn-create-post {
+      background: var(--primary);
+      color: #fff;
+      border: none;
+      padding: 10px;
+      border-radius: 6px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 1024px) {
+      .right-sidebar { display: none; }
+      .sidebar { width: var(--sidebar-collapsed-width); align-items: center; }
+      .brand-logo { font-size: 0; padding: 0 0 20px; }
+      .brand-logo::first-letter { font-size: 28px; }
+      .nav-item a span { display: none; }
+      .main-container { margin-left: var(--sidebar-collapsed-width); }
+    }
+
+    @media (max-width: 600px) {
+      .sidebar { display: none; }
+      .main-container { margin-left: 0; padding: 12px 8px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Left Sidebar -->
+  <aside class="sidebar">
+    <div>
+      <a href="feed.html" class="brand-logo">Instagram</a>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="feed.html" class="active">
+            <svg viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+            <span>Home</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#">
+            <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+            <span>Search</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#">
+            <svg viewBox="0 0 24 24"><polygon points="12 2 2 7 12 12 22 7 12 2"></polygon><polyline points="2 17 12 22 22 17"></polyline><polyline points="2 12 12 17 22 12"></polyline></svg>
+            <span>Explore</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#">
+            <svg viewBox="0 0 24 24"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+            <span>Reels</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" id="toggleChatBtn">
+            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            <span>Messages (Go Live)</span>
+            <span class="badge-dot"></span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#">
+            <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            <span>Notifications</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#" id="openCreatePostBtn">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+            <span>Create</span>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="index.html">
+            <svg viewBox="0 0 24 24"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <span id="navUsername">Sign In / Register</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+
+    <div>
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="#">
+            <svg viewBox="0 0 24 24"><line x1="3" y1="12" x2="21" y2="12"></line><line x1="3" y1="6" x2="21" y2="6"></line><line x1="3" y1="18" x2="21" y2="18"></line></svg>
+            <span>More</span>
+          </a>
+        </li>
+      </ul>
+    </div>
+  </aside>
+
+  <!-- Main Feed Area -->
+  <main class="main-container">
+    <div class="feed-column">
+      
+      <!-- Top Stories -->
+      <div class="stories-container">
+        <div class="story-item">
+          <div class="story-ring">
+            <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop" alt="story">
+          </div>
+          <span class="story-username">your_story</span>
+        </div>
+        <div class="story-item">
+          <div class="story-ring">
+            <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop" alt="story">
+          </div>
+          <span class="story-username">david_dev</span>
+        </div>
+        <div class="story-item">
+          <div class="story-ring">
+            <img src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150&auto=format&fit=crop" alt="story">
+          </div>
+          <span class="story-username">sarah_codes</span>
+        </div>
+        <div class="story-item">
+          <div class="story-ring">
+            <img src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=150&auto=format&fit=crop" alt="story">
+          </div>
+          <span class="story-username">alex_ai</span>
+        </div>
+        <div class="story-item">
+          <div class="story-ring">
+            <img src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150&auto=format&fit=crop" alt="story">
+          </div>
+          <span class="story-username">elena_ux</span>
+        </div>
+      </div>
+
+      <!-- Feed Posts Container -->
+      <div id="postsList" style="display: flex; flex-direction: column; gap: 28px;">
+        <!-- Post 1 -->
+        <article class="post-card" data-post-id="1">
+          <div class="post-header">
+            <a href="#" class="post-user">
+              <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop" class="post-avatar" alt="avatar">
+              <div class="post-user-info">
+                <span>sarah_codes</span>
+                <span class="post-time">• 2h</span>
+              </div>
+            </a>
+            <svg style="width: 20px; height: 20px; cursor: pointer;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
+          </div>
+
+          <div class="post-media-box">
+            <img src="https://images.unsplash.com/photo-1518770660439-4636190af475?w=900&auto=format&fit=crop" alt="post">
+            <svg class="heart-burst" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </div>
+
+          <div class="post-actions">
+            <div class="action-group">
+              <button class="action-btn btn-like">
+                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              </button>
+              <button class="action-btn">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              </button>
+              <button class="action-btn">
+                <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+            </div>
+            <button class="action-btn">
+              <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+            </button>
+          </div>
+
+          <div class="post-likes"><span class="like-counter">1,248</span> likes</div>
+          <div class="post-caption">
+            <strong>sarah_codes</strong> Late night debugging session with Java 21 & Go! Microservices architecture coming alive 🚀
+          </div>
+
+          <a href="#" class="view-comments">View all 42 comments</a>
+
+          <div class="post-comment-input-box">
+            <input type="text" class="post-comment-input" placeholder="Add a comment...">
+            <button type="button" class="btn-post-comment">Post</button>
+          </div>
+        </article>
+
+        <!-- Post 2 -->
+        <article class="post-card" data-post-id="2">
+          <div class="post-header">
+            <a href="#" class="post-user">
+              <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop" class="post-avatar" alt="avatar">
+              <div class="post-user-info">
+                <span>alex_ai</span>
+                <span class="post-time">• 5h</span>
+              </div>
+            </a>
+            <svg style="width: 20px; height: 20px; cursor: pointer;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
+          </div>
+
+          <div class="post-media-box">
+            <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=900&auto=format&fit=crop" alt="post">
+            <svg class="heart-burst" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+          </div>
+
+          <div class="post-actions">
+            <div class="action-group">
+              <button class="action-btn btn-like">
+                <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+              </button>
+              <button class="action-btn">
+                <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+              </button>
+              <button class="action-btn">
+                <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+              </button>
+            </div>
+            <button class="action-btn">
+              <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+            </button>
+          </div>
+
+          <div class="post-likes"><span class="like-counter">3,892</span> likes</div>
+          <div class="post-caption">
+            <strong>alex_ai</strong> The calm before the sprint demo. Beautiful evening at the beach! 🌊
+          </div>
+
+          <a href="#" class="view-comments">View all 110 comments</a>
+
+          <div class="post-comment-input-box">
+            <input type="text" class="post-comment-input" placeholder="Add a comment...">
+            <button type="button" class="btn-post-comment">Post</button>
+          </div>
+        </article>
+      </div>
+
+    </div>
+
+    <!-- Right Sidebar -->
+    <aside class="right-sidebar">
+      <div class="user-profile-badge">
+        <div class="user-badge-left">
+          <img id="currentAvatar" src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop" alt="avatar">
+          <div class="badge-names">
+            <strong id="badgeUsername">guest_user</strong>
+            <small id="badgeFullname">Instagram Explorer</small>
+          </div>
+        </div>
+        <a href="index.html" class="btn-switch" id="authActionLink">Sign In</a>
+      </div>
+
+      <div class="suggestions-header">
+        <span>Suggested for you</span>
+        <a href="#">See All</a>
+      </div>
+
+      <div class="suggestion-item">
+        <div class="suggestion-user">
+          <img src="https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?w=100&auto=format&fit=crop" alt="suggestion">
+          <div class="badge-names">
+            <strong>golang_daily</strong>
+            <small>Followed by alex_ai + 8 more</small>
+          </div>
+        </div>
+        <button class="btn-follow">Follow</button>
+      </div>
+
+      <div class="suggestion-item">
+        <div class="suggestion-user">
+          <img src="https://images.unsplash.com/photo-1580489944761-15a19d654956?w=100&auto=format&fit=crop" alt="suggestion">
+          <div class="badge-names">
+            <strong>spring_framework</strong>
+            <small>Suggested for you</small>
+          </div>
+        </div>
+        <button class="btn-follow">Follow</button>
+      </div>
+
+      <div class="suggestion-item">
+        <div class="suggestion-user">
+          <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?w=100&auto=format&fit=crop" alt="suggestion">
+          <div class="badge-names">
+            <strong>mongodb_official</strong>
+            <small>Popular in Tech</small>
+          </div>
+        </div>
+        <button class="btn-follow">Follow</button>
+      </div>
+
+      <p style="font-size: 11px; color: #555; line-height: 1.5; margin-top: 10px;">
+        About • Help • Press • API • Jobs • Privacy • Terms • Locations • Language
+        <br><br>
+        © 2026 INSTAGRAM FROM META
+      </p>
+    </aside>
+  </main>
+
+  <!-- Live Direct Message (Chat) Drawer connected to Go Concurrency WebSocket -->
+  <div class="chat-drawer" id="chatDrawer">
+    <div class="chat-header">
+      <div class="chat-header-title">
+        <span class="status-dot"></span>
+        <span>Live DM (Go Concurrency)</span>
+      </div>
+      <button id="closeChatBtn" style="background:none; border:none; color:#aaa; cursor:pointer; font-size:16px;">✕</button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+      <div class="chat-msg other">
+        Welcome to Instagram Live Messages! Powered by Go Goroutines & WebSockets (Port 8081).
+      </div>
+    </div>
+    <form class="chat-input-bar" id="chatForm">
+      <input type="text" class="chat-input" id="chatInput" placeholder="Message..." autocomplete="off">
+      <button type="submit" class="chat-send-btn">Send</button>
+    </form>
+  </div>
+
+  <!-- Create Post Modal -->
+  <div class="modal-overlay" id="createPostModal">
+    <div class="modal-card">
+      <div class="modal-header">
+        Create new post
+        <button class="modal-close-btn" id="closeCreateModalBtn">✕</button>
+      </div>
+      <div class="modal-body">
+        <input type="url" class="modal-input" id="postImageUrl" placeholder="Image URL (e.g. Unsplash URL)..." required>
+        <textarea class="modal-input" id="postCaptionInput" rows="3" placeholder="Write a caption..."></textarea>
+        <button type="button" class="btn-create-post" id="submitCreatePostBtn">Share Post</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // Check logged-in user from localStorage
+    const savedUser = localStorage.getItem('ig_user');
+    const navUsername = document.getElementById('navUsername');
+    const badgeUsername = document.getElementById('badgeUsername');
+    const badgeFullname = document.getElementById('badgeFullname');
+    const authActionLink = document.getElementById('authActionLink');
+
+    let currentUsername = 'guest_user';
+
+    if (savedUser) {
+      try {
+        const userObj = JSON.parse(savedUser);
+        currentUsername = userObj.username || 'user';
+        navUsername.textContent = '@' + currentUsername;
+        badgeUsername.textContent = currentUsername;
+        badgeFullname.textContent = userObj.fullName || 'Member';
+        authActionLink.textContent = 'Log out';
+        authActionLink.href = '#';
+        authActionLink.addEventListener('click', () => {
+          localStorage.removeItem('ig_token');
+          localStorage.removeItem('ig_user');
+          window.location.reload();
+        });
+      } catch (e) {}
+    }
+
+    // Double tap to like & like button toggle
+    function bindPostInteractions(postCard) {
+      const mediaBox = postCard.querySelector('.post-media-box');
+      const heartBurst = postCard.querySelector('.heart-burst');
+      const likeBtn = postCard.querySelector('.btn-like');
+      const likeCounter = postCard.querySelector('.like-counter');
+      const commentInput = postCard.querySelector('.post-comment-input');
+      const commentBtn = postCard.querySelector('.btn-post-comment');
+
+      let isLiked = false;
+
+      function triggerLike() {
+        isLiked = !isLiked;
+        if (isLiked) {
+          likeBtn.classList.add('liked');
+          heartBurst.classList.add('animate');
+          setTimeout(() => heartBurst.classList.remove('animate'), 600);
+          updateCount(1);
+        } else {
+          likeBtn.classList.remove('liked');
+          updateCount(-1);
+        }
+      }
+
+      function updateCount(delta) {
+        let count = parseInt(likeCounter.textContent.replace(/,/g, '')) || 0;
+        likeCounter.textContent = (count + delta).toLocaleString();
+      }
+
+      likeBtn.addEventListener('click', triggerLike);
+      mediaBox.addEventListener('dblclick', () => {
+        if (!isLiked) triggerLike();
+        else {
+          heartBurst.classList.add('animate');
+          setTimeout(() => heartBurst.classList.remove('animate'), 600);
+        }
+      });
+
+      // Post comment
+      function addComment() {
+        const val = commentInput.value.trim();
+        if (!val) return;
+        const commentLine = document.createElement('div');
+        commentLine.style.fontSize = '13.5px';
+        commentLine.style.marginTop = '4px';
+        commentLine.innerHTML = `<strong>${currentUsername}</strong> ${escapeHtml(val)}`;
+        postCard.querySelector('.post-caption').insertAdjacentElement('afterend', commentLine);
+        commentInput.value = '';
+      }
+
+      commentBtn.addEventListener('click', addComment);
+      commentInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') addComment();
+      });
+    }
+
+    document.querySelectorAll('.post-card').forEach(bindPostInteractions);
+
+    function escapeHtml(str) {
+      return str.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;");
+    }
+
+    // Modal Create Post
+    const createModal = document.getElementById('createPostModal');
+    const openCreateBtn = document.getElementById('openCreatePostBtn');
+    const closeCreateBtn = document.getElementById('closeCreateModalBtn');
+    const submitCreateBtn = document.getElementById('submitCreatePostBtn');
+    const postImageUrl = document.getElementById('postImageUrl');
+    const postCaptionInput = document.getElementById('postCaptionInput');
+    const postsList = document.getElementById('postsList');
+
+    openCreateBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      createModal.classList.add('open');
+    });
+
+    closeCreateBtn.addEventListener('click', () => createModal.classList.remove('open'));
+
+    submitCreateBtn.addEventListener('click', () => {
+      const url = postImageUrl.value.trim() || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?w=900&auto=format&fit=crop';
+      const caption = postCaptionInput.value.trim() || 'Just posted a new update!';
+
+      const newArticle = document.createElement('article');
+      newArticle.className = 'post-card';
+      newArticle.innerHTML = `
+        <div class="post-header">
+          <a href="#" class="post-user">
+            <img src="${document.getElementById('currentAvatar').src}" class="post-avatar" alt="avatar">
+            <div class="post-user-info">
+              <span>${currentUsername}</span>
+              <span class="post-time">• Just now</span>
+            </div>
+          </a>
+          <svg style="width: 20px; height: 20px; cursor: pointer;" viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="1.5"></circle><circle cx="6" cy="12" r="1.5"></circle><circle cx="18" cy="12" r="1.5"></circle></svg>
+        </div>
+        <div class="post-media-box">
+          <img src="${escapeHtml(url)}" alt="post">
+          <svg class="heart-burst" viewBox="0 0 24 24"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>
+        </div>
+        <div class="post-actions">
+          <div class="action-group">
+            <button class="action-btn btn-like">
+              <svg viewBox="0 0 24 24"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+            </button>
+            <button class="action-btn">
+              <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path></svg>
+            </button>
+            <button class="action-btn">
+              <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"></line><polygon points="22 2 15 22 11 13 2 9 22 2"></polygon></svg>
+            </button>
+          </div>
+          <button class="action-btn">
+            <svg viewBox="0 0 24 24"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
+          </button>
+        </div>
+        <div class="post-likes"><span class="like-counter">1</span> like</div>
+        <div class="post-caption">
+          <strong>${currentUsername}</strong> ${escapeHtml(caption)}
+        </div>
+        <div class="post-comment-input-box">
+          <input type="text" class="post-comment-input" placeholder="Add a comment...">
+          <button type="button" class="btn-post-comment">Post</button>
+        </div>
+      `;
+
+      postsList.prepend(newArticle);
+      bindPostInteractions(newArticle);
+
+      createModal.classList.remove('open');
+      postImageUrl.value = '';
+      postCaptionInput.value = '';
+    });
+
+    // Go Concurrency WebSocket Integration (Port 8081)
+    const toggleChatBtn = document.getElementById('toggleChatBtn');
+    const closeChatBtn = document.getElementById('closeChatBtn');
+    const chatDrawer = document.getElementById('chatDrawer');
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+
+    let ws = null;
+
+    function initWebSocket() {
+      if (ws) return;
+      try {
+        ws = new WebSocket(`ws://localhost:8081/ws?user_id=${encodeURIComponent(currentUsername)}`);
+        
+        ws.onopen = () => {
+          appendChatMessage('Connected to Go Realtime WebSocket hub on port 8081!', 'other');
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            const data = JSON.parse(event.data);
+            if (data.sender_id !== currentUsername) {
+              appendChatMessage(`[${data.sender_id}]: ${data.content}`, 'other');
+            }
+          } catch(e) {
+            appendChatMessage(event.data, 'other');
+          }
+        };
+
+        ws.onerror = () => {
+          appendChatMessage('WebSocket offline. Start backend-concurrency service to chat live.', 'other');
+        };
+
+        ws.onclose = () => {
+          ws = null;
+        };
+      } catch (err) {
+        appendChatMessage('Live Go server not reachable at ws://localhost:8081/ws', 'other');
+      }
+    }
+
+    function appendChatMessage(text, type) {
+      const msg = document.createElement('div');
+      msg.className = `chat-msg ${type}`;
+      msg.textContent = text;
+      chatMessages.appendChild(msg);
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+
+    toggleChatBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      chatDrawer.classList.toggle('open');
+      if (chatDrawer.classList.contains('open')) {
+        initWebSocket();
+        chatInput.focus();
+      }
+    });
+
+    closeChatBtn.addEventListener('click', () => {
+      chatDrawer.classList.remove('open');
+    });
+
+    chatForm.addEventListener('submit', (e) => {
+      e.preventDefault();
+      const val = chatInput.value.trim();
+      if (!val) return;
+
+      appendChatMessage(val, 'me');
+
+      if (ws && ws.readyState === WebSocket.OPEN) {
+        ws.send(JSON.stringify({
+          type: 'chat',
+          content: val
+        }));
+      }
+
+      chatInput.value = '';
+    });
+  </script>
+</body>
+</html>

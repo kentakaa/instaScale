@@ -1,0 +1,24 @@
+server:
+  port: 8080
+
+spring:
+  application:
+    name: instagram-core-service
+  data:
+    mongodb:
+      uri: mongodb://localhost:27017/instagram_db
+      auto-index-creation: true
+
+jwt:
+  # Secret key (at least 256-bit / 32 bytes)
+  secret: 404E635266556A586E3272357538782F413F4428472B4B6250645367566B5970
+  access-token-expiration-ms: 86400000 # 24 hours
+  refresh-token-expiration-ms: 604800000 # 7 days
+
+cors:
+  allowed-origins:
+    - "http://localhost:3000"
+    - "http://localhost:5173"
+    - "http://localhost:8080"
+    - "http://127.0.0.1:5500"
+    - "*"
