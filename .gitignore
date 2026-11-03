@@ -1,2 +1,6 @@
 me.txt
 start-servers.bat
+.env
+.vscode/
+.DS_Store
+Thumbs.db
